@@ -1,0 +1,116 @@
+[gd_scene load_steps=6 format=3 uid="uid://ykebdu5xjxof"]
+
+[ext_resource type="Script" uid="uid://brx2g7snxjo41" path="res://UI/game_ui.gd" id="1_mp46i"]
+[ext_resource type="Texture2D" uid="uid://bxc037j5fux05" path="res://Assets/heart-red.png" id="2_kfjql"]
+[ext_resource type="FontFile" uid="uid://dugqvkbmivdxx" path="res://Assets/fonts/Orbitron-VariableFont_wght.ttf" id="3_h0rig"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_kfjql"]
+font = ExtResource("3_h0rig")
+font_size = 36
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_h0rig"]
+font = ExtResource("3_h0rig")
+font_size = 36
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="GameUI" type="CanvasLayer"]
+script = ExtResource("1_mp46i")
+
+[node name="Heart1Shad" type="TextureRect" parent="."]
+modulate = Color(0, 0, 0, 0.4)
+custom_minimum_size = Vector2(86, 86)
+offset_left = 78.0
+offset_top = 2.0
+offset_right = 164.0
+offset_bottom = 88.0
+texture = ExtResource("2_kfjql")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Heart2Shad" type="TextureRect" parent="."]
+modulate = Color(0, 0, 0, 0.4)
+custom_minimum_size = Vector2(86, 86)
+offset_left = 154.0
+offset_top = 2.0
+offset_right = 240.0
+offset_bottom = 88.0
+texture = ExtResource("2_kfjql")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Heart3Shad3" type="TextureRect" parent="."]
+modulate = Color(0, 0, 0, 0.4)
+custom_minimum_size = Vector2(86, 86)
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 66.0
+offset_bottom = 66.0
+texture = ExtResource("2_kfjql")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeartContainer" type="HBoxContainer" parent="."]
+z_index = 10
+custom_minimum_size = Vector2(100, 32)
+offset_right = 104.0
+offset_bottom = 32.0
+size_flags_vertical = 0
+theme_override_constants/separation = -10
+alignment = 1
+
+[node name="Heart1" type="TextureRect" parent="HeartContainer"]
+z_index = 10
+custom_minimum_size = Vector2(86, 86)
+layout_mode = 2
+texture = ExtResource("2_kfjql")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Heart2" type="TextureRect" parent="HeartContainer"]
+z_index = 3
+custom_minimum_size = Vector2(86, 86)
+layout_mode = 2
+texture = ExtResource("2_kfjql")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Heart3" type="TextureRect" parent="HeartContainer"]
+z_index = 4
+custom_minimum_size = Vector2(86, 86)
+layout_mode = 2
+texture = ExtResource("2_kfjql")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ScoreLabel" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -260.0
+offset_right = -41.0
+offset_bottom = 88.0
+grow_horizontal = 0
+size_flags_horizontal = 0
+text = "000000"
+label_settings = SubResource("LabelSettings_kfjql")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Score Text" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -445.0
+offset_top = 4.0
+offset_right = -275.0
+offset_bottom = 83.0
+grow_horizontal = 0
+size_flags_horizontal = 4
+text = "Score:"
+label_settings = SubResource("LabelSettings_h0rig")
+horizontal_alignment = 1
+vertical_alignment = 1

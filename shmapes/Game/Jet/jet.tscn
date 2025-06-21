@@ -1,0 +1,132 @@
+[gd_scene load_steps=12 format=3 uid="uid://nhyvn8fux2wd"]
+
+[ext_resource type="Script" uid="uid://dg85xs6idfyel" path="res://Game/Jet/jet.gd" id="1_qm20h"]
+[ext_resource type="Texture2D" uid="uid://cx14tm63a5rue" path="res://Assets/Player-Re.png" id="2_dn2pr"]
+
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_dn2pr"]
+points = PackedVector2Array(16.33, -19.272, 14.8673, 11.1033, -8.84787, -2.217)
+
+[sub_resource type="Animation" id="Animation_3mo7r"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Jet1:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_dn2pr"]
+resource_name = "invuln_animation"
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Jet1:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fblxy"]
+_data = {
+&"RESET": SubResource("Animation_3mo7r"),
+&"invuln_animation": SubResource("Animation_dn2pr")
+}
+
+[sub_resource type="Gradient" id="Gradient_dn2pr"]
+offsets = PackedFloat32Array(0, 0.537764, 1)
+colors = PackedColorArray(0.570033, 0.0946025, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_3mo7r"]
+gradient = SubResource("Gradient_dn2pr")
+
+[sub_resource type="Curve" id="Curve_fblxy"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_pu04x"]
+curve = SubResource("Curve_fblxy")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dn2pr"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 6.97
+gravity = Vector3(-98, 0, 0)
+scale_min = 3.0
+scale_max = 4.0
+scale_curve = SubResource("CurveTexture_pu04x")
+color_ramp = SubResource("GradientTexture1D_3mo7r")
+
+[node name="Jet" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_qm20h")
+
+[node name="Jet1" type="Sprite2D" parent="."]
+position = Vector2(7.84269, 0.894387)
+rotation = 1.5708
+scale = Vector2(0.075357, 0.109963)
+texture = ExtResource("2_dn2pr")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2(-3, -5)
+rotation = 1.05903
+scale = Vector2(1.25, 1.25)
+shape = SubResource("ConvexPolygonShape2D_dn2pr")
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(28, 1)
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 10
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(-3, -5)
+rotation = 1.05903
+scale = Vector2(1.25, 1.25)
+shape = SubResource("ConvexPolygonShape2D_dn2pr")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_fblxy")
+}
+
+[node name="invul_timer" type="Timer" parent="."]
+
+[node name="dash_cooldown" type="Timer" parent="."]
+one_shot = true
+
+[node name="dash_duration_timer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="DashCam" type="Camera2D" parent="."]
+position = Vector2(47, 2)
+limit_left = 0
+limit_top = 0
+limit_right = 1920
+limit_bottom = 1080
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+z_index = -1
+position = Vector2(-10, 0)
+amount = 100
+lifetime = 0.2
+speed_scale = 2.0
+process_material = SubResource("ParticleProcessMaterial_dn2pr")
+
+[connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
+[connection signal="timeout" from="invul_timer" to="." method="_on_invul_timer_timeout"]
+[connection signal="timeout" from="dash_cooldown" to="." method="_on_dash_cooldown_timeout"]
+[connection signal="timeout" from="dash_duration_timer" to="." method="_on_dash_duration_timer_timeout"]
