@@ -120,7 +120,7 @@ limit_bottom = 1080
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 z_index = -1
-position = Vector2(-10, 0)
+position = Vector2(-7, 0)
 amount = 100
 lifetime = 0.2
 speed_scale = 2.0
