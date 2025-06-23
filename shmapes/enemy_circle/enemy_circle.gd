@@ -6,20 +6,23 @@ extends CharacterBody2D
 @onready var explosion: GPUParticles2D = $explosion
 @onready var circle: Sprite2D = $Circle
 @export var rotation_speed := 80.0
+@onready var collision: CollisionShape2D = $CollisionShape2D
+
 
 var player: Node2D
 var health := max_health
 
-func take_damage(amount: int) -> void:
+func take_damage(_amount: int) -> void:
 	health -= 1
 	flash_on_hit()
 	if health <= 0:
 		die()
 		
 func die() -> void:
+	remove_from_group("ENEMY")
+	$CollisionShape2D.set_deferred("disabled", true)
 	circle.hide()
 	explosion.emitting = true
-	collision_layer = false
 	await get_tree().create_timer(0.5).timeout
 	Score.score += 10
 	var ui = get_tree().current_scene.get_node("GameUI")

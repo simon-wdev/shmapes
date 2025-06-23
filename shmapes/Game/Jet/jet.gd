@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export var speed := 500.0
-@export var fire_rate := 0.3
+@export var fire_rate := 0.5
 @export var dash_speed := 2000
 @export var target_range := 400.0
 
@@ -22,7 +22,7 @@ var is_dashing = false
 var dash_direction = Vector2.ZERO
 
 func _ready() -> void:
-	var current_health = max_health
+	current_health = max_health
 	get_tree().current_scene.get_node("GameUI").update_hearts(current_health)
 	
 
@@ -42,14 +42,14 @@ func _process(delta: float) -> void:
 func shoot():
 	var target = get_nearest_visible_enemy()
 	if not target:
-		return  # Kein Ziel → keine Kugel
+		return
 
 	var bullet = BULLET.instantiate()
 	bullet.global_position = marker_2d.global_position
 	bullet.direction = (target.global_position - global_position).normalized()
 	get_tree().current_scene.add_child(bullet)
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	var input_vector := Vector2.ZERO
 
 	if Input.is_action_pressed("UP"):

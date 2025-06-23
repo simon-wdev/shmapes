@@ -20,7 +20,7 @@ func _on_body_entered(body: Node2D) -> void:
 			on_bullet_hit_enemy(body.global_position)
 	queue_free()
 	
-func on_bullet_hit_enemy(position):
+func on_bullet_hit_enemy(_pos):
 	var effect = HIT_EFFECT.instantiate()
 	effect.global_position = position
 	get_tree().current_scene.add_child(effect)
