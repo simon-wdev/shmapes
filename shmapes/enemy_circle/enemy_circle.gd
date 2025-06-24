@@ -5,8 +5,9 @@ extends CharacterBody2D
 @export var max_health: int = 2
 @onready var explosion: GPUParticles2D = $explosion
 @onready var circle: Sprite2D = $Circle
-@export var rotation_speed := 80.0
 @onready var collision: CollisionShape2D = $CollisionShape2D
+@onready var die_sound: AudioStreamPlayer2D = $die_sound
+
 
 
 var player: Node2D
@@ -22,8 +23,9 @@ func die() -> void:
 	remove_from_group("ENEMY")
 	$CollisionShape2D.set_deferred("disabled", true)
 	circle.hide()
+	die_sound.play()
 	explosion.emitting = true
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.8).timeout
 	Score.score += 10
 	var ui = get_tree().current_scene.get_node("GameUI")
 	ui.update_score_points(Score.score)
@@ -43,7 +45,6 @@ func _process(delta: float) -> void:
 	var direction = (player.global_position - global_position).normalized()
 	global_position += direction * speed * delta
 	
-	rotation_degrees += rotation_speed * delta
 
 func flash_on_hit():
 	modulate = Color(1, 0.4,0.4)

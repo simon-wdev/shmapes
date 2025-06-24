@@ -16,7 +16,7 @@ offset_right = 1928.0
 offset_bottom = 1090.0
 color = Color(0.145098, 0.164706, 0.203922, 1)
 
-[node name="Jet" parent="." groups=["PLAYER"] instance=ExtResource("1_bk3v5")]
+[node name="Jet" parent="." instance=ExtResource("1_bk3v5")]
 position = Vector2(1116, 942)
 rotation = -1.5708
 

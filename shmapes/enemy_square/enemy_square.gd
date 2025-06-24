@@ -1,27 +1,27 @@
 extends CharacterBody2D
 
-@export var speed = 100
-@export var shoot_interval = 0.5
+@export var shoot_interval = 0.3
+@export var max_health: int = 5
+@onready var square: Sprite2D = $RotationNode/Square
+@onready var explosion: GPUParticles2D = $explosion
+@onready var die_sound: AudioStreamPlayer2D = $die_sound
 
 const ENEMY_BULLET = preload("res://enemy_bullet/enemy_bullet.tscn")
-
-@onready var bullet_spawner_1: Marker2D = $bullet_spawner1
-@onready var bullet_spawner_2: Marker2D = $bullet_spawner2
-@onready var bullet_spawner_3: Marker2D = $bullet_spawner3
-@onready var bullet_spawner_4: Marker2D = $bullet_spawner4
-
-
 
 var is_active = false
 var screen_size
 var target_pos
-var is_stationary = false
 var shoot_timer = 0.0
+var health := max_health
+var is_dying = false
 
 func _ready() -> void:
 	pass
 	
 func _physics_process(delta: float) -> void:
+	if is_dying:
+		return
+		
 	if is_active:
 		$RotationNode.rotation += 0.7 * delta
 	
@@ -49,3 +49,27 @@ func shoot():
 func _on_spawn_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "fade-in":
 		is_active = true
+		
+func take_damage(_amount: int) -> void:
+	health -= 1
+	flash_on_hit()
+	if health <= 0:
+		die()
+		
+func die() -> void:
+	is_dying = true
+	remove_from_group("ENEMY")
+	$CollisionShape2D.set_deferred("disabled", true)
+	square.hide()
+	die_sound.play()
+	explosion.emitting = true
+	await get_tree().create_timer(0.9).timeout
+	Score.score += 30
+	var ui = get_tree().current_scene.get_node("GameUI")
+	ui.update_score_points(Score.score)
+	queue_free()
+	
+func flash_on_hit():
+	modulate = Color(1, 0.4,0.4)
+	await get_tree().create_timer(0.1).timeout
+	modulate = Color(1, 1, 1)

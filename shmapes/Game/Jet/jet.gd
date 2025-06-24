@@ -1,9 +1,9 @@
 extends CharacterBody2D
 
-@export var speed := 500.0
+@export var speed := 300.0
 @export var fire_rate := 0.5
 @export var dash_speed := 2000
-@export var target_range := 400.0
+@export var target_range := 500.0
 
 const BULLET = preload("res://Bullet/bullet.tscn")
 
@@ -14,6 +14,7 @@ const BULLET = preload("res://Bullet/bullet.tscn")
 @onready var dash_duration_timer: Timer = $dash_duration_timer
 @onready var dash_cam: Camera2D = $DashCam
 
+var current_target: Node2D = null
 var max_health = 3
 var current_health = max_health
 var time_since_last_shot := 0.0
@@ -27,15 +28,37 @@ func _ready() -> void:
 	
 
 func _process(delta: float) -> void:
-	var target = get_nearest_visible_enemy()
-	if target:
-		var target_angle = (target.global_position - global_position).angle()
+	var new_target = get_nearest_visible_enemy()
+
+# Wenn sich das Target geändert hat → Timer resetten!
+	if new_target != current_target:
+		current_target = new_target
+		time_since_last_shot = 0.0  # Sofort wieder feuern möglich!
+
+	if current_target:
+		var target_angle = (current_target.global_position - global_position).angle()
 		rotation = lerp_angle(rotation, target_angle, delta * 10)
 	else:
-		rotation = lerp_angle(rotation, -PI / 2, delta * 2.0)
-		
+		var input_vector = Vector2.ZERO
+		if Input.is_action_pressed("UP"):
+			input_vector.y -= 1
+		if Input.is_action_pressed("DOWN"):
+			input_vector.y += 1
+		if Input.is_action_pressed("LEFT"):
+			input_vector.x -= 1
+		if Input.is_action_pressed("RIGHT"):
+			input_vector.x += 1
+			
+		if input_vector.length() > 0:
+			var input_angle = input_vector.angle()
+			rotation = lerp_angle(rotation, input_angle, delta * 5.0)
+			
+		else:
+			rotation = lerp_angle(rotation, -PI / 2, delta * 2.0)
+
 	time_since_last_shot += delta
-	if has_visible_enemies() and time_since_last_shot >= fire_rate:
+
+	if current_target and time_since_last_shot >= fire_rate:
 		shoot()
 		time_since_last_shot = 0.0
 
@@ -43,7 +66,6 @@ func shoot():
 	var target = get_nearest_visible_enemy()
 	if not target:
 		return
-
 	var bullet = BULLET.instantiate()
 	bullet.global_position = marker_2d.global_position
 	bullet.direction = (target.global_position - global_position).normalized()
@@ -82,10 +104,10 @@ func _physics_process(_delta: float) -> void:
 	elif global_position.y > screen_size.y:
 		global_position.y = 0
 	
-func player_take_damage():
+func player_take_damage(amount: int = 1):
 	if is_invulnerable:
 		return
-	current_health -= 1
+	current_health -= amount
 	get_tree().current_scene.get_node("GameUI").update_hearts(current_health)
 	is_invulnerable = true
 	animation_player.play("invuln_animation")
@@ -115,7 +137,6 @@ func dash() -> void:
 		is_dashing = true
 		is_invulnerable = true
 		dash_direction = get_dash_direction().normalized()
-		dash_camera_bump()
 		dash_duration_timer.start()
 		dash_cooldown.start()
 
@@ -143,12 +164,7 @@ func _on_dash_duration_timer_timeout() -> void:
 	is_dashing = false
 	is_invulnerable = false
 	
-func has_visible_enemies() -> bool:
-	for enemy in get_tree().get_nodes_in_group("ENEMY"):
-		var notifier = enemy.get_node_or_null("Screencheck") as VisibleOnScreenNotifier2D
-		if notifier and notifier.is_on_screen():
-			return true
-	return false
+
 
 func get_nearest_visible_enemy() -> Node2D:
 	var closest_enemy: Node2D = null
@@ -157,6 +173,7 @@ func get_nearest_visible_enemy() -> Node2D:
 	for enemy in get_tree().get_nodes_in_group("ENEMY"):
 		if not enemy.is_inside_tree(): continue
 		if not enemy.visible: continue
+		if "is_active" in enemy and not enemy.is_active: continue
 		
 		var dist = global_position.distance_to(enemy.global_position)
 		if dist < closest_dist and dist <= target_range:
@@ -164,9 +181,3 @@ func get_nearest_visible_enemy() -> Node2D:
 			closest_enemy = enemy
 			
 	return closest_enemy
-
-func dash_camera_bump():
-	var bump_amount = dash_direction * 10
-	var tween = dash_cam.create_tween()
-	tween.tween_property(dash_cam, "offset", bump_amount, 0.01)
-	tween.tween_property(dash_cam, "offset", Vector2.ZERO, 0.2)

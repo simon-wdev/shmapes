@@ -67,7 +67,7 @@ scale_max = 4.0
 scale_curve = SubResource("CurveTexture_pu04x")
 color_ramp = SubResource("GradientTexture1D_3mo7r")
 
-[node name="Jet" type="CharacterBody2D" groups=["PLAYER"]]
+[node name="Jet" type="CharacterBody2D"]
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("1_qm20h")
