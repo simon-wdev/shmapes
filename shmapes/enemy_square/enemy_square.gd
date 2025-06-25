@@ -1,6 +1,5 @@
 extends CharacterBody2D
 
-@export var shoot_interval = 0.3
 @export var max_health: int = 5
 @onready var square: Sprite2D = $RotationNode/Square
 @onready var explosion: GPUParticles2D = $explosion
@@ -12,6 +11,9 @@ var is_active = false
 var screen_size
 var target_pos
 var shoot_timer = 0.0
+var base_shoot_interval = 1.0
+var min_shoot_interval = 0.1
+var shoot_interval = base_shoot_interval
 var health := max_health
 var is_dying = false
 
@@ -23,7 +25,13 @@ func _physics_process(delta: float) -> void:
 		return
 		
 	if is_active:
-		$RotationNode.rotation += 0.7 * delta
+		$RotationNode.rotation += 0.4 * delta
+		
+		var game_ui = get_tree().current_scene.get_node("GameUI")
+		var current_score = game_ui.score
+		
+		shoot_interval = base_shoot_interval - (current_score * 0.0004)
+		shoot_interval = max(shoot_interval, min_shoot_interval)
 	
 		shoot_timer += delta
 		if shoot_timer > shoot_interval:
@@ -62,11 +70,11 @@ func die() -> void:
 	$CollisionShape2D.set_deferred("disabled", true)
 	square.hide()
 	die_sound.play()
+	var ui = get_tree().current_scene.get_node("GameUI")
+	ui.add_score(30)
 	explosion.emitting = true
 	await get_tree().create_timer(0.9).timeout
-	Score.score += 30
-	var ui = get_tree().current_scene.get_node("GameUI")
-	ui.update_score_points(Score.score)
+	
 	queue_free()
 	
 func flash_on_hit():

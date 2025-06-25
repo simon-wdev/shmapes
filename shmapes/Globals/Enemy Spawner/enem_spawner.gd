@@ -5,7 +5,7 @@ const ENEMY_CIRCLE = preload("res://enemy_circle/enemy_circle.tscn")
 
 @export var spawn_interval := 3.0
 @export var spawn_timer_decrease := 0.2
-@export var min_spawn_interval := 0.5
+@export var min_spawn_interval := 0.8
 @export var difficulty_interval := 8.0
 @export var spawn_decrease_step := 0.10
 

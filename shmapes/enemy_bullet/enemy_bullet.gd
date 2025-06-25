@@ -25,3 +25,7 @@ func on_bullet_hit_player(_pos):
 	var effect = HIT_EFFECT.instantiate()
 	effect.global_position = position
 	get_tree().current_scene.add_child(effect)
+
+
+func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
+	queue_free()

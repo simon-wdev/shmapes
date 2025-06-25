@@ -1,8 +1,8 @@
 extends CharacterBody2D
 
-@export var speed := 300.0
-@export var fire_rate := 0.5
-@export var dash_speed := 2000
+@export var speed := 350.0
+@export var fire_rate := 0.3
+@export var dash_speed := 1500
 @export var target_range := 500.0
 
 const BULLET = preload("res://Bullet/bullet.tscn")

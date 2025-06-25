@@ -1,14 +1,15 @@
 extends CharacterBody2D
 
 @onready var game_ui = get_node("/root/Game/GameUI")
-@export var speed := 100.0
+@export var base_speed := 100.0
 @export var max_health: int = 2
 @onready var explosion: GPUParticles2D = $explosion
 @onready var circle: Sprite2D = $Circle
 @onready var collision: CollisionShape2D = $CollisionShape2D
 @onready var die_sound: AudioStreamPlayer2D = $die_sound
 
-
+var speed = base_speed
+var max_speed = 400.0
 
 var player: Node2D
 var health := max_health
@@ -24,11 +25,11 @@ func die() -> void:
 	$CollisionShape2D.set_deferred("disabled", true)
 	circle.hide()
 	die_sound.play()
+	var ui = get_tree().current_scene.get_node("GameUI")
+	ui.add_score(10)
 	explosion.emitting = true
 	await get_tree().create_timer(0.8).timeout
-	Score.score += 10
-	var ui = get_tree().current_scene.get_node("GameUI")
-	ui.update_score_points(Score.score)
+	
 	queue_free()
 	
 
@@ -44,6 +45,12 @@ func _process(delta: float) -> void:
 
 	var direction = (player.global_position - global_position).normalized()
 	global_position += direction * speed * delta
+	
+	var game_ui = get_tree().current_scene.get_node("GameUI")
+	var current_score = game_ui.score
+	speed = base_speed + (current_score * 0.1)
+	speed = min(speed, max_speed)
+	
 	
 
 func flash_on_hit():
