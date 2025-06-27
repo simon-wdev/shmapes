@@ -1,8 +1,8 @@
 extends CharacterBody2D
 
 @onready var game_ui = get_node("/root/Game/GameUI")
-@export var base_speed := 100.0
-@export var max_health: int = 2
+@export var base_speed := 20.0
+@export var max_health: int = 10
 @onready var explosion: GPUParticles2D = $explosion
 @onready var circle: Sprite2D = $Circle
 @onready var collision: CollisionShape2D = $CollisionShape2D
@@ -70,11 +70,6 @@ func spawn_heart() -> void:
 	var heal = HEART_PICKUP.instantiate()
 	heal.global_position = position
 	get_tree().current_scene.add_child(heal)
-	
-	
-	
-	
-	
 	
 	
 	

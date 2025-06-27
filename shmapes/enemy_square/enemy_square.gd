@@ -6,13 +6,14 @@ extends CharacterBody2D
 @onready var die_sound: AudioStreamPlayer2D = $die_sound
 
 const ENEMY_BULLET = preload("res://enemy_bullet/enemy_bullet.tscn")
+const HEART_PICKUP = preload("res://Pickable/heart_pickup.tscn")
 
 var is_active = false
 var screen_size
 var target_pos
 var shoot_timer = 0.0
 var base_shoot_interval = 1.0
-var min_shoot_interval = 0.1
+var min_shoot_interval = 0.3
 var shoot_interval = base_shoot_interval
 var health := max_health
 var is_dying = false
@@ -73,6 +74,11 @@ func die() -> void:
 	var ui = get_tree().current_scene.get_node("GameUI")
 	ui.add_score(30)
 	explosion.emitting = true
+	
+	var heal_chance := randf()
+	if heal_chance <= 0.05:
+		call_deferred("spawn_heart")
+	
 	await get_tree().create_timer(0.9).timeout
 	
 	queue_free()
@@ -81,3 +87,8 @@ func flash_on_hit():
 	modulate = Color(1, 0.4,0.4)
 	await get_tree().create_timer(0.1).timeout
 	modulate = Color(1, 1, 1)
+
+func spawn_heart() -> void:
+	var heal = HEART_PICKUP.instantiate()
+	heal.global_position = position
+	get_tree().current_scene.add_child(heal)

@@ -13,6 +13,7 @@ const BULLET = preload("res://Bullet/bullet.tscn")
 @onready var dash_cooldown: Timer = $dash_cooldown
 @onready var dash_duration_timer: Timer = $dash_duration_timer
 @onready var dash_cam: Camera2D = $DashCam
+@onready var game_ui: CanvasLayer = $"../GameUI"
 
 var current_target: Node2D = null
 var max_health = 3
@@ -24,16 +25,16 @@ var dash_direction = Vector2.ZERO
 
 func _ready() -> void:
 	current_health = max_health
-	get_tree().current_scene.get_node("GameUI").update_hearts(current_health)
+	if game_ui:
+		game_ui.update_hearts(current_health)
 	
 
 func _process(delta: float) -> void:
 	var new_target = get_nearest_visible_enemy()
 
-# Wenn sich das Target geändert hat → Timer resetten!
 	if new_target != current_target:
 		current_target = new_target
-		time_since_last_shot = 0.0  # Sofort wieder feuern möglich!
+		time_since_last_shot = 0.0
 
 	if current_target:
 		var target_angle = (current_target.global_position - global_position).angle()
@@ -86,8 +87,8 @@ func _physics_process(_delta: float) -> void:
 	if is_dashing:
 		velocity = dash_direction * dash_speed
 	else:
-		velocity = input_vector.normalized() * speed
-	
+		velocity = velocity.lerp(input_vector.normalized() * speed, 0.3)
+		
 	dash()
 	
 	move_and_slide()
@@ -150,7 +151,7 @@ func get_dash_direction() -> Vector2:
 	if Input.is_action_pressed("LEFT"):
 		input_vector.x -= 1
 	if Input.is_action_pressed("RIGHT"):
-		input_vector.x =+ 1
+		input_vector.x += 1
 		
 	return input_vector
 
@@ -181,3 +182,12 @@ func get_nearest_visible_enemy() -> Node2D:
 			closest_enemy = enemy
 			
 	return closest_enemy
+	
+	
+func heal_player() -> void:
+	if current_health == max_health:
+		return
+
+	if current_health <= max_health:
+		current_health += 1
+		game_ui.update_hearts(current_health)
