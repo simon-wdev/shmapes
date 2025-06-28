@@ -76,7 +76,7 @@ func die() -> void:
 	explosion.emitting = true
 	
 	var heal_chance := randf()
-	if heal_chance <= 0.05:
+	if heal_chance <= 0.02:
 		call_deferred("spawn_heart")
 	
 	await get_tree().create_timer(0.9).timeout

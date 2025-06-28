@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @onready var game_ui = get_node("/root/Game/GameUI")
-@export var base_speed := 100.0
+@export var base_speed := 50.0
 @export var max_health: int = 2
 @onready var explosion: GPUParticles2D = $explosion
 @onready var circle: Sprite2D = $Circle
@@ -11,7 +11,7 @@ extends CharacterBody2D
 const HEART_PICKUP = preload("res://Pickable/heart_pickup.tscn")
 
 var speed = base_speed
-var max_speed = 350.0
+var max_speed = 150.0
 
 var player: Node2D
 var health := max_health
@@ -32,7 +32,7 @@ func die() -> void:
 	explosion.emitting = true
 	
 	var heal_chance := randf()
-	if heal_chance <= 0.02:
+	if heal_chance <= 0.01:
 		call_deferred("spawn_heart")
 	
 	await get_tree().create_timer(0.8).timeout

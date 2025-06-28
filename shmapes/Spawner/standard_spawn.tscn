@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://bminbx0ppyjn3"]
+
+[ext_resource type="Script" uid="uid://imaxybsm2egq" path="res://Spawner/standard_spawn.gd" id="1_mhrci"]
+
+[node name="StandardSpawn" type="Node2D"]
+script = ExtResource("1_mhrci")
+
+[node name="spawn_interval" type="Timer" parent="."]
+autostart = true
+
+[node name="spawn_increase" type="Timer" parent="."]
+wait_time = 30.0
+autostart = true
+
+[connection signal="timeout" from="spawn_interval" to="." method="_on_spawn_interval_timeout"]
+[connection signal="timeout" from="spawn_increase" to="." method="_on_spawn_increase_timeout"]

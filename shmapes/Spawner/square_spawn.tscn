@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2ehyviq3uyoa"]
+
+[ext_resource type="Script" uid="uid://57koo0sqiv0g" path="res://Spawner/square_spawn.gd" id="1_n6xrv"]
+
+[node name="square_spawn" type="Node2D"]
+script = ExtResource("1_n6xrv")
+
+[node name="spawn_time" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="spawn_time" to="." method="_on_spawn_time_timeout"]

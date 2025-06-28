@@ -5,7 +5,6 @@ const HEART_RED = preload("res://Assets/heart-red.png")
 const HEART_GRAY = preload("res://Assets/heart-gray.png")
 var score_label: Label
 var score: int = 0
-var next_level_score: int = 70
 
 @onready var hearts = [
 	$HeartContainer/Heart1,
@@ -13,8 +12,21 @@ var next_level_score: int = 70
 	$HeartContainer/Heart3
 ]
 
+var level_table = []
+var current_level = 0
+var growth = 1.25
+
+func generate_level_table():
+	var level_score = 100
+	var increment = 120
+	for i in range(50):
+		level_table.append(level_score)
+		level_score += increment
+		increment += 20
+
 func _ready() -> void:
 	score_label = get_node("ScoreLabel")
+	generate_level_table()
 	
 func update_hearts(current_health: int):
 	for i in range(hearts.size()):
@@ -31,8 +43,8 @@ func add_score(points: int):
 	score += points
 	update_score_points(score)
 	
-	if score >= next_level_score:
-		next_level_score += int(next_level_score * 1.02)
+	if score >= level_table[current_level]:
+		current_level += 1
 		var upgrade_menu = get_tree().current_scene.get_node("UpgradeMenu")
 		upgrade_menu.show_menu()
 	

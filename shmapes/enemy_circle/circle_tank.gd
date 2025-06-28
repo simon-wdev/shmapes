@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @onready var game_ui = get_node("/root/Game/GameUI")
-@export var base_speed := 20.0
+@export var speed := 100.0
 @export var max_health: int = 10
 @onready var explosion: GPUParticles2D = $explosion
 @onready var circle: Sprite2D = $Circle
@@ -9,9 +9,6 @@ extends CharacterBody2D
 @onready var die_sound: AudioStreamPlayer2D = $die_sound
 
 const HEART_PICKUP = preload("res://Pickable/heart_pickup.tscn")
-
-var speed = base_speed
-var max_speed = 350.0
 
 var player: Node2D
 var health := max_health
@@ -28,7 +25,7 @@ func die() -> void:
 	circle.hide()
 	die_sound.play()
 	var ui = get_tree().current_scene.get_node("GameUI")
-	ui.add_score(10)
+	ui.add_score(50)
 	explosion.emitting = true
 	
 	var heal_chance := randf()
@@ -55,10 +52,8 @@ func _process(delta: float) -> void:
 	
 	var game_ui = get_tree().current_scene.get_node("GameUI")
 	var current_score = game_ui.score
-	speed = base_speed + (current_score * 0.1)
-	speed = min(speed, max_speed)
 	
-	
+	rotation += deg_to_rad(60) * delta
 
 func flash_on_hit():
 	modulate = Color(1, 0.4,0.4)

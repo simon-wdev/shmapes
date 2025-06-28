@@ -18,7 +18,6 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-EnemySpawner="*res://Globals/Enemy Spawner/enem_spawner.gd"
 Score="*res://Globals/GameStats/Score.gd"
 
 [display]
