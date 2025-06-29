@@ -70,11 +70,11 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Dash Cooldown -1"
 
+[node name="tank_spawner" parent="." instance=ExtResource("8_buohc")]
+
 [node name="StandardSpawn" parent="." instance=ExtResource("6_qmv3x")]
 
 [node name="square_spawn" parent="." instance=ExtResource("7_oomkl")]
-
-[node name="tank_spawner" parent="." instance=ExtResource("8_buohc")]
 
 [connection signal="pressed" from="UpgradeMenu/Panel/VBoxContainer/Upgrade1" to="UpgradeMenu" method="_on_Upgrade1_pressed"]
 [connection signal="pressed" from="UpgradeMenu/Panel/VBoxContainer/Upgrade2" to="UpgradeMenu" method="_on_Upgrade2_pressed"]
