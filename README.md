@@ -14,17 +14,17 @@ Features:
 - Polished visual style using clean shapes and particle effects
 
 Current Progress:
--Player movement & shooting
--3 enemy types(Circle, Square, Tank)
--Randomized enemy spawning
--Level-up system with upgrade menu
+- Player movement & shooting
+- 3 enemy types(Circle, Square, Tank)
+- Randomized enemy spawning
+- Level-up system with upgrade menu
 
 To-Do:
--Visual polish, particles and hit feedback
--Sound effects
--Boss spawning & move sets
--Additional enemy types
--Final design & implementation of upgrade systems
+- Visual polish, particles and hit feedback
+- Sound effects
+- Boss spawning & move sets
+- Additional enemy types
+- Final design & implementation of upgrade systems
 
 Tech Stack:
 **Engine:** Godot4.4
@@ -32,11 +32,11 @@ Tech Stack:
 **Version Control:** - Git + GitHub
 
 Inspirations:
--Vampire Survivors
--Nova Drift
--Brotato
--Axelay
--Just Shapes & Beats
+- Vampire Survivors
+- Nova Drift
+- Brotato
+- Axelay
+- Just Shapes & Beats
 
 Folder-Structure:
 The project structure is currently evolving and will be documented once the core systems are finalized.
