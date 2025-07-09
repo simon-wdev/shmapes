@@ -1,13 +1,24 @@
 extends Area2D
 
-@export var speed := 800.0
-const ENEMY_CIRCLE = preload("res://enemy_circle/enemy_circle.tscn")
 
-var direction := Vector2.ZERO
+
+const ENEMY_CIRCLE = preload("res://enemy_circle/enemy_circle.tscn")
 const HIT_EFFECT = preload("res://Hit_Effect/hit_effect.tscn")
 
+
+@export var speed := 800.0
+@export var bullet_scale: float = 0.08
+@onready var sprite_2d: Sprite2D = $Sprite2D
+@onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
+@export var crit_chance: float = 0.0
+
+var direction := Vector2.ZERO
+
+
 func _ready():
-	pass
+	print("bullet_scale start:", bullet_scale)
+	$Sprite2D.scale = Vector2.ONE * bullet_scale
+	$CollisionShape2D.scale = Vector2.ONE * bullet_scale
 
 func _process(delta):
 	position += direction * speed * delta
@@ -15,9 +26,17 @@ func _process(delta):
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("ENEMY"):
-		if body.has_method("take_damage"):
-			body.take_damage(1)
-			on_bullet_hit_enemy(body.global_position)
+		var is_crit = randf()
+		var damage = 1
+		if is_crit:
+			damage = 2
+		body.take_damage(damage)
+		
+		on_bullet_hit_enemy(body.global_position)
+		
+		if is_crit:
+			show_crit_feedback()
+			
 	queue_free()
 	
 func on_bullet_hit_enemy(_pos):
@@ -28,3 +47,8 @@ func on_bullet_hit_enemy(_pos):
 
 func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
 	queue_free()
+	
+func show_crit_feedback():
+	modulate = Color (1, 1, 0.2)
+	await get_tree().create_timer(0.1).timeout
+	modulate = Color (1, 1, 1)

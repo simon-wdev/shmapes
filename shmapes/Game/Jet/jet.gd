@@ -22,6 +22,9 @@ var time_since_last_shot := 0.0
 var is_invulnerable = false
 var is_dashing = false
 var dash_direction = Vector2.ZERO
+var has_spreadshot = false
+var bullet_scale = 0.08
+var crit_chance = 0.0
 
 func _ready() -> void:
 	current_health = max_health
@@ -63,15 +66,34 @@ func _process(delta: float) -> void:
 		shoot()
 		time_since_last_shot = 0.0
 
+func enable_spreadshot() -> void:
+	has_spreadshot = true
+
+
 func shoot():
 	var target = get_nearest_visible_enemy()
 	if not target:
 		return
+		
+	var base_direction = (target.global_position - global_position).normalized()
+	
+	if has_spreadshot:
+		shoot_bullet(base_direction.rotated(deg_to_rad(-5)))
+		shoot_bullet(base_direction)
+		shoot_bullet(base_direction.rotated(deg_to_rad(5)))
+	else:
+		shoot_bullet(base_direction)
+		
+func shoot_bullet(direction: Vector2) -> void:
 	var bullet = BULLET.instantiate()
 	bullet.global_position = marker_2d.global_position
-	bullet.direction = (target.global_position - global_position).normalized()
+	bullet.direction = direction
+	bullet.bullet_scale = bullet_scale
+	bullet.crit_chance = crit_chance
 	get_tree().current_scene.add_child(bullet)
-
+	
+	
+	
 func _physics_process(_delta: float) -> void:
 	var input_vector := Vector2.ZERO
 

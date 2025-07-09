@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 	var direction = (player.global_position - global_position).normalized()
 	global_position += direction * speed * delta
 	
-	var game_ui = get_tree().current_scene.get_node("GameUI")
+	get_tree().current_scene.get_node("GameUI")
 	var current_score = game_ui.score
 	
 	rotation += deg_to_rad(60) * delta
