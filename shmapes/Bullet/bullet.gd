@@ -7,16 +7,17 @@ const HIT_EFFECT = preload("res://Hit_Effect/hit_effect.tscn")
 
 
 @export var speed := 800.0
+@export var base_damage: int = 1
 @export var bullet_scale: float = 0.08
 @onready var sprite_2d: Sprite2D = $Sprite2D
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @export var crit_chance: float = 0.0
 
+var piercing := false
 var direction := Vector2.ZERO
 
 
 func _ready():
-	print("bullet_scale start:", bullet_scale)
 	$Sprite2D.scale = Vector2.ONE * bullet_scale
 	$CollisionShape2D.scale = Vector2.ONE * bullet_scale
 
@@ -26,18 +27,18 @@ func _process(delta):
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("ENEMY"):
-		var is_crit = randf()
-		var damage = 1
+		var is_crit = randf() < crit_chance
+		var damage = base_damage
 		if is_crit:
-			damage = 2
+			damage *= 2
 		body.take_damage(damage)
 		
 		on_bullet_hit_enemy(body.global_position)
 		
 		if is_crit:
 			show_crit_feedback()
-			
-	queue_free()
+	if not piercing:
+		queue_free()
 	
 func on_bullet_hit_enemy(_pos):
 	var effect = HIT_EFFECT.instantiate()

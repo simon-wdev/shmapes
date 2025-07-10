@@ -59,8 +59,8 @@ func _on_spawn_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "fade-in":
 		is_active = true
 		
-func take_damage(_amount: int) -> void:
-	health -= 1
+func take_damage(amount: int) -> void:
+	health -= amount
 	flash_on_hit()
 	if health <= 0:
 		die()

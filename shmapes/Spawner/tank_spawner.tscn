@@ -14,8 +14,13 @@ autostart = true
 wait_time = 20.0
 
 [node name="spawn_increase" type="Timer" parent="."]
-wait_time = 30.0
+wait_time = 20.0
+
+[node name="life_increase" type="Timer" parent="."]
+wait_time = 40.0
+autostart = true
 
 [connection signal="timeout" from="spawn_start" to="." method="_on_spawn_start_timeout"]
 [connection signal="timeout" from="spawn_interval" to="." method="_on_spawn_interval_timeout"]
 [connection signal="timeout" from="spawn_increase" to="." method="_on_spawn_increase_timeout"]
+[connection signal="timeout" from="life_increase" to="." method="_on_life_increase_timeout"]

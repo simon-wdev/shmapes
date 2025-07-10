@@ -16,8 +16,8 @@ var max_speed = 150.0
 var player: Node2D
 var health := max_health
 
-func take_damage(_amount: int) -> void:
-	health -= 1
+func take_damage(amount: int) -> void:
+	health -= amount
 	flash_on_hit()
 	if health <= 0:
 		die()

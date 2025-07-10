@@ -4,6 +4,8 @@ const ENEMY_SQUARE = preload("res://enemy_square/enemy_square.tscn")
 
 @onready var spawn_time: Timer = $spawn_time
 
+var current_square_health := 5
+
 
 func _ready() -> void:
 	start_square_spawn_timer()
@@ -19,11 +21,14 @@ func spawn_square() -> void:
 		)
 		
 	enemy.global_position = spawn_pos
+	enemy.max_health = current_square_health
+	enemy.health = current_square_health
 	get_tree().current_scene.add_child(enemy)
 
 func start_square_spawn_timer() -> void:
 	var random_time = randf_range(30.0, 60.0)
 	spawn_time.wait_time = random_time
+	current_square_health += 1
 	spawn_time.start()
 	
 	

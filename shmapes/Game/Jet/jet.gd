@@ -25,6 +25,8 @@ var dash_direction = Vector2.ZERO
 var has_spreadshot = false
 var bullet_scale = 0.08
 var crit_chance = 0.0
+var base_damage := 1
+var has_piercing := false
 
 func _ready() -> void:
 	current_health = max_health
@@ -90,6 +92,8 @@ func shoot_bullet(direction: Vector2) -> void:
 	bullet.direction = direction
 	bullet.bullet_scale = bullet_scale
 	bullet.crit_chance = crit_chance
+	bullet.base_damage = base_damage
+	bullet.piercing = has_piercing
 	get_tree().current_scene.add_child(bullet)
 	
 	
