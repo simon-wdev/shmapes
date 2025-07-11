@@ -9,17 +9,32 @@ extends CanvasLayer
 var used_upgrades = []
 var current_choices = []
 
-var upgrades = {
-	"Fire Rate Up": Callable(self, "_upgrade_fire_rate"),
-	"Speed Up": Callable(self, "_upgrade_speed"),
-	"Dash Cooldown Down": Callable(self, "_upgrade_dash"),
-	"Spreadshot": Callable(self, "_upgrade_spreadshot"),
-	"Big Bullets": Callable(self, "_upgrade_big_bullets"),
-	"Crit Chance Up": Callable(self, "_upgrade_crit"),
-	"Damage Up": Callable(self, "_upgrade_damage"),
-	"Piercing Bullets": Callable(self, "_upgrade_piercing"),
-	"Target Range Up": Callable(self, "_upgrade_target_range")
-}
+var upgrades = [
+	{"name": "Fire Rate Up", "func": Callable(self, "_upgrade_fire_rate"), "weight": 25},
+	{"name": "Speed Up", "func": Callable(self, "_upgrade_speed"), "weight": 25},
+	{"name": "Dash Cooldown Down", "func": Callable(self, "_upgrade_dash"), "weight": 15},
+	{"name": "Spreadshot", "func": Callable(self, "_upgrade_spreadshot"), "weight": 10},
+	{"name": "Big Bullets", "func": Callable(self, "_upgrade_big_bullets"), "weight": 20},
+	{"name": "Crit Chance Up", "func": Callable(self, "_upgrade_crit"), "weight": 15},
+	{"name": "Damage Up",  "func": Callable(self, "_upgrade_damage"), "weight": 20},
+	{"name": "Piercing Bullets Chance +", "func": Callable(self, "_upgrade_piercing"), "weight": 15},
+	{"name": "Target Range Up", "func": Callable(self, "_upgrade_target_range"), "weight": 10},
+	{"name": "Radial Multishot Chance+", "func": Callable(self, "_upgrade_radial_shot"), "weight": 10},
+	{"name": "Max Life +", "func": Callable(self, "_upgrade_max_life"), "weight": 5}
+]
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	
+	if event is InputEventKey and event.pressed:
+		match event.keycode:
+			KEY_1:
+				upgrade_1.emit_signal("pressed")
+			KEY_2:
+				upgrade_2.emit_signal("pressed")
+			KEY_3:
+				upgrade_3.emit_signal("pressed")
 
 
 func _ready() -> void:
@@ -31,14 +46,20 @@ func show_menu() -> void:
 	visible = true
 	
 	current_choices.clear()
-	var keys = upgrades.keys()
-	keys = keys.filter(func(upgrade_name): return not used_upgrades.has(upgrade_name))
-	keys.shuffle()
-	current_choices = keys.slice(0, 3)
 	
-	upgrade_1.text = current_choices[0]
-	upgrade_2.text = current_choices[1]
-	upgrade_3.text = current_choices[2]
+	var available = upgrades.filter(func(u): return not used_upgrades.has(u.name))
+	var weighted_pool = []
+	
+	for upgrades in available:
+		for i in upgrades.weight:
+			weighted_pool.append(upgrades)
+			
+	weighted_pool.shuffle()
+	current_choices = weighted_pool.slice(0, 3)
+	
+	upgrade_1.text = current_choices[0].name
+	upgrade_2.text = current_choices[1].name
+	upgrade_3.text = current_choices[2].name
 	
 	
 func hide_menu() -> void:
@@ -46,19 +67,19 @@ func hide_menu() -> void:
 	visible = false
 	
 func _on_Upgrade1_pressed():
-	apply_upgrades(current_choices[0])
+	apply_upgrades(current_choices[0].func, current_choices[0].name)
 	
 func _on_Upgrade2_pressed():
-	apply_upgrades(current_choices[1])
+	apply_upgrades(current_choices[1].func, current_choices[1].name)
 	
 func _on_Upgrade3_pressed():
-	apply_upgrades(current_choices[2])
+	apply_upgrades(current_choices[2].func, current_choices[2].name)
 	
-func apply_upgrades(upgrade_name: String):
+func apply_upgrades(upgrade_func: Callable, name: String):
 	var player = get_tree().current_scene.get_node("Jet")
-	upgrades[upgrade_name].call(player)
-	if upgrade_name == "Spreadshot":
-		used_upgrades.append("Spreadshot")
+	upgrade_func.callv([player])
+	if name == "Spreadshot" or name == "Piercing Bullets":
+		used_upgrades.append(name)
 	hide_menu()
 
 
@@ -81,12 +102,22 @@ func _upgrade_crit(player):
 	player.crit_chance = clamp(player.crit_chance + 0.1, 0.0, 1.0)
 	
 func _upgrade_damage(player):
-	player.base_damage += 1
-	used_upgrades.append("Damage Up")
+	if player.damage_up_count < 3:
+		player.base_damage += 1
+		player.damage_up_count += 1
+	if player.damage_up_count == 3:
+		used_upgrades.append("Damage Up")
 
 func _upgrade_piercing(player):
-	player.has_piercing = true
-	used_upgrades.append("Piercing Bullets")
+	player.piercing_chance = clamp(player.piercing_chance + 0.2, 0.0, 1.0)
+	if player.piercing_chance >= 1.0:
+		used_upgrades.append("Piercing Bullets")
 	
 func _upgrade_target_range(player):
 	player.target_range *= 1.1
+	
+func _upgrade_radial_shot(player):
+	player.radial_shot_chance = clamp(player.radial_shot_chance + 0.1, 0.0, 0.4)
+	
+func _upgrade_max_life(player):
+	player.upgrade_max_life()

@@ -28,7 +28,7 @@ func spawn_square() -> void:
 func start_square_spawn_timer() -> void:
 	var random_time = randf_range(30.0, 60.0)
 	spawn_time.wait_time = random_time
-	current_square_health += 1
+	current_square_health += 2
 	spawn_time.start()
 	
 	

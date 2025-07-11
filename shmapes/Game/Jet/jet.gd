@@ -14,10 +14,12 @@ const BULLET = preload("res://Bullet/bullet.tscn")
 @onready var dash_duration_timer: Timer = $dash_duration_timer
 @onready var dash_cam: Camera2D = $DashCam
 @onready var game_ui: CanvasLayer = $"../GameUI"
+@onready var radial_sfx: AudioStreamPlayer2D = $radial_sfx
+@onready var take_damage_sfx: AudioStreamPlayer2D = $take_damage_sfx
 
 var current_target: Node2D = null
 var max_health = 3
-var current_health = max_health
+var current_health = 3
 var time_since_last_shot := 0.0
 var is_invulnerable = false
 var is_dashing = false
@@ -26,12 +28,14 @@ var has_spreadshot = false
 var bullet_scale = 0.08
 var crit_chance = 0.0
 var base_damage := 1
-var has_piercing := false
+var damage_up_count := 0
+var piercing_chance := 0.0
+var radial_shot_chance := 0.0
 
 func _ready() -> void:
 	current_health = max_health
 	if game_ui:
-		game_ui.update_hearts(current_health)
+		game_ui.update_hearts(current_health, max_health)
 	
 
 func _process(delta: float) -> void:
@@ -86,6 +90,14 @@ func shoot():
 	else:
 		shoot_bullet(base_direction)
 		
+	if randf() < radial_shot_chance:
+		var clone_count = 8
+		for i in range(clone_count):
+			var angle = TAU * i / clone_count
+			var dir = Vector2.RIGHT.rotated(angle)
+			shoot_colored_bullet(dir, Color(10, 0, 0))
+			radial_sfx.play()
+		
 func shoot_bullet(direction: Vector2) -> void:
 	var bullet = BULLET.instantiate()
 	bullet.global_position = marker_2d.global_position
@@ -93,9 +105,19 @@ func shoot_bullet(direction: Vector2) -> void:
 	bullet.bullet_scale = bullet_scale
 	bullet.crit_chance = crit_chance
 	bullet.base_damage = base_damage
-	bullet.piercing = has_piercing
+	bullet.piercing_chance = piercing_chance
 	get_tree().current_scene.add_child(bullet)
-	
+
+func shoot_colored_bullet(direction: Vector2, color: Color) -> void:
+	var bullet = BULLET.instantiate()
+	bullet.global_position = marker_2d.global_position
+	bullet.direction = direction
+	bullet.bullet_scale = bullet_scale
+	bullet.speed = 500.0
+	bullet.crit_chance = crit_chance
+	bullet.base_damage = base_damage
+	bullet.start_color = color
+	get_tree().current_scene.add_child(bullet)
 	
 	
 func _physics_process(_delta: float) -> void:
@@ -135,9 +157,10 @@ func player_take_damage(amount: int = 1):
 	if is_invulnerable:
 		return
 	current_health -= amount
-	get_tree().current_scene.get_node("GameUI").update_hearts(current_health)
+	get_tree().current_scene.get_node("GameUI").update_hearts(current_health, max_health)
 	is_invulnerable = true
 	animation_player.play("invuln_animation")
+	take_damage_sfx.play()
 	invul_timer.start()
 	
 	if current_health <= 0:
@@ -216,4 +239,9 @@ func heal_player() -> void:
 
 	if current_health <= max_health:
 		current_health += 1
-		game_ui.update_hearts(current_health)
+		game_ui.update_hearts(current_health, max_health)
+
+func upgrade_max_life() -> void:
+	max_health += 1
+	current_health = max_health
+	get_tree().current_scene.get_node("GameUI").update_hearts(current_health, max_health)

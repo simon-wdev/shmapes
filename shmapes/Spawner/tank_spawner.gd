@@ -29,7 +29,7 @@ func _on_spawn_start_timeout() -> void:
 	start_spawning()
 	
 func _on_spawn_increase_timeout() -> void:
-	spawn_interval.wait_time = max(spawn_interval.wait_time - 1.0, 2.0)
+	spawn_interval.wait_time = max(spawn_interval.wait_time - 0.5, 1.0)
 
 func start_spawning() -> void:
 	_on_spawn_increase_timeout()

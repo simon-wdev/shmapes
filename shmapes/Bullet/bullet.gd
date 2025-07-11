@@ -5,10 +5,11 @@ extends Area2D
 const ENEMY_CIRCLE = preload("res://enemy_circle/enemy_circle.tscn")
 const HIT_EFFECT = preload("res://Hit_Effect/hit_effect.tscn")
 
-
+@export var start_color: Color = Color(1, 1, 1)
 @export var speed := 800.0
 @export var base_damage: int = 1
 @export var bullet_scale: float = 0.08
+@export var piercing_chance: float = 0.0
 @onready var sprite_2d: Sprite2D = $Sprite2D
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @export var crit_chance: float = 0.0
@@ -20,6 +21,7 @@ var direction := Vector2.ZERO
 func _ready():
 	$Sprite2D.scale = Vector2.ONE * bullet_scale
 	$CollisionShape2D.scale = Vector2.ONE * bullet_scale
+	$Sprite2D.modulate = start_color
 
 func _process(delta):
 	position += direction * speed * delta
@@ -37,7 +39,9 @@ func _on_body_entered(body: Node2D) -> void:
 		
 		if is_crit:
 			show_crit_feedback()
-	if not piercing:
+			
+	var should_pierce = randf() < piercing_chance
+	if not should_pierce:
 		queue_free()
 	
 func on_bullet_hit_enemy(_pos):

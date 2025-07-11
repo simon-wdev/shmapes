@@ -22,9 +22,9 @@ func generate_level_table():
 	for i in range(25):
 		level_table.append(level_score)
 		level_score += increment
-		increment += 100
+		increment += 80
 		
-	for i in range(50, 100):
+	for i in range(25, 50):
 		level_score += int(increment * 1.5)
 		level_table.append(level_score)
 		increment += 120
@@ -38,8 +38,14 @@ func _ready() -> void:
 	score_label = get_node("ScoreLabel")
 	generate_level_table()
 	
-func update_hearts(current_health: int):
+func update_hearts(current_health: int, max_health: int):
+	while hearts.size() < max_health:
+		var new_heart = hearts[0].duplicate()
+		$HeartContainer.add_child(new_heart)
+		hearts.append(new_heart)
+		
 	for i in range(hearts.size()):
+		hearts[i].visible = i < max_health
 		if i < current_health:
 			hearts[i].texture = HEART_RED
 		else:

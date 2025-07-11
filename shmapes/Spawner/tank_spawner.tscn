@@ -14,7 +14,7 @@ autostart = true
 wait_time = 20.0
 
 [node name="spawn_increase" type="Timer" parent="."]
-wait_time = 20.0
+wait_time = 40.0
 
 [node name="life_increase" type="Timer" parent="."]
 wait_time = 40.0

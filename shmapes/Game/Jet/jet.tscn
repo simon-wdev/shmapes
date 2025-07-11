@@ -1,7 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://nhyvn8fux2wd"]
+[gd_scene load_steps=14 format=3 uid="uid://nhyvn8fux2wd"]
 
 [ext_resource type="Script" uid="uid://dg85xs6idfyel" path="res://Game/Jet/jet.gd" id="1_qm20h"]
 [ext_resource type="Texture2D" uid="uid://cx14tm63a5rue" path="res://Assets/Player-Re.png" id="2_dn2pr"]
+[ext_resource type="AudioStream" uid="uid://blbk88d3w143k" path="res://Assets/sounds/pop.ogg" id="3_3mo7r"]
+[ext_resource type="AudioStream" uid="uid://uqoqn6ydlp3i" path="res://Assets/sounds/turret.wav" id="4_fblxy"]
 
 [sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_dn2pr"]
 points = PackedVector2Array(16.33, -19.272, 14.8673, 11.1033, -8.84787, -2.217)
@@ -125,6 +127,14 @@ amount = 100
 lifetime = 0.2
 speed_scale = 2.0
 process_material = SubResource("ParticleProcessMaterial_dn2pr")
+
+[node name="radial_sfx" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_3mo7r")
+volume_db = 3.0
+
+[node name="take_damage_sfx" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_fblxy")
+volume_db = 10.0
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
 [connection signal="timeout" from="invul_timer" to="." method="_on_invul_timer_timeout"]
