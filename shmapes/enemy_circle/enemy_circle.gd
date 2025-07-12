@@ -9,6 +9,7 @@ extends CharacterBody2D
 @onready var die_sound: AudioStreamPlayer2D = $die_sound
 
 const HEART_PICKUP = preload("res://Pickable/heart_pickup.tscn")
+const NUKE_PICKUP = preload("res://NukePickup/nuke_pickup.tscn")
 
 var speed = base_speed
 var max_speed = 150.0
@@ -37,6 +38,7 @@ func die() -> void:
 	
 	await get_tree().create_timer(0.8).timeout
 	
+	drop_nuke_pickup()
 	queue_free()
 	
 
@@ -70,7 +72,12 @@ func spawn_heart() -> void:
 	var heal = HEART_PICKUP.instantiate()
 	heal.global_position = position
 	get_tree().current_scene.add_child(heal)
-	
+
+func drop_nuke_pickup():
+	if randf() < 0.001:
+		var nuke = NUKE_PICKUP.instantiate()
+		nuke.global_position = global_position
+		get_tree().current_scene.add_child(nuke)
 	
 	
 	

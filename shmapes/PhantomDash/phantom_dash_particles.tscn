@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3 uid="uid://dsw31050ufvro"]
+
+[sub_resource type="Gradient" id="Gradient_kqpmk"]
+offsets = PackedFloat32Array(0.0275591, 0.625984, 1)
+colors = PackedColorArray(0.0313726, 0.85098, 0.839216, 1, 0.741176, 0.921569, 0.913725, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_q3a82"]
+gradient = SubResource("Gradient_kqpmk")
+
+[sub_resource type="Curve" id="Curve_kqpmk"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_q3a82"]
+curve = SubResource("Curve_kqpmk")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kqpmk"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
+spread = 150.0
+radial_velocity_min = 150.0
+radial_velocity_max = 150.0
+gravity = Vector3(-98, 0, 0)
+scale_min = 3.0
+scale_max = 5.0
+scale_curve = SubResource("CurveTexture_q3a82")
+color_ramp = SubResource("GradientTexture1D_q3a82")
+
+[node name="phantom_particles" type="GPUParticles2D"]
+z_index = 1
+position = Vector2(-7, 0)
+emitting = false
+amount = 200
+lifetime = 0.7
+one_shot = true
+speed_scale = 2.0
+explosiveness = 0.5
+trail_lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_kqpmk")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://erwsaj35v0hk"]
+[gd_scene load_steps=9 format=3 uid="uid://erwsaj35v0hk"]
 
 [ext_resource type="Script" uid="uid://b84ipxs8gbois" path="res://Game/game.gd" id="1_7raqb"]
 [ext_resource type="PackedScene" uid="uid://nhyvn8fux2wd" path="res://Game/Jet/jet.tscn" id="1_bk3v5"]
@@ -8,44 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://bminbx0ppyjn3" path="res://Spawner/standard_spawn.tscn" id="6_qmv3x"]
 [ext_resource type="PackedScene" uid="uid://d2ehyviq3uyoa" path="res://Spawner/square_spawn.tscn" id="7_oomkl"]
 [ext_resource type="PackedScene" uid="uid://bou2dich2utxy" path="res://Spawner/tank_spawner.tscn" id="8_buohc"]
-
-[sub_resource type="Animation" id="Animation_buohc"]
-resource_name = "Fade"
-length = 0.8
-step = 0.1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:color")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.4, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
-}
-
-[sub_resource type="Animation" id="Animation_kul4i"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:color")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 0)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_7gi1t"]
-_data = {
-&"Fade": SubResource("Animation_buohc"),
-&"RESET": SubResource("Animation_kul4i")
-}
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_7raqb")
@@ -115,8 +77,9 @@ text = "Dash Cooldown -1"
 [node name="square_spawn" parent="." instance=ExtResource("7_oomkl")]
 
 [node name="FlashOverlay" type="ColorRect" parent="."]
+visible = false
 z_index = 500
-custom_minimum_size = Vector2(2000, 1200)
+custom_minimum_size = Vector2(1920, 1080)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -125,13 +88,6 @@ offset_right = 1920.0
 offset_bottom = 1085.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-color = Color(1, 1, 1, 0)
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="FlashOverlay"]
-libraries = {
-&"": SubResource("AnimationLibrary_7gi1t")
-}
 
 [connection signal="pressed" from="UpgradeMenu/Panel/VBoxContainer/Upgrade1" to="UpgradeMenu" method="_on_Upgrade1_pressed"]
 [connection signal="pressed" from="UpgradeMenu/Panel/VBoxContainer/Upgrade2" to="UpgradeMenu" method="_on_Upgrade2_pressed"]

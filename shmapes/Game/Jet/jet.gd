@@ -7,6 +7,17 @@ extends CharacterBody2D
 
 const BULLET = preload("res://Bullet/bullet.tscn")
 
+@onready var jet_sprite: Sprite2D = $Jet1
+
+@export var normal_texture: Texture2D
+@export var phantom_texture: Texture2D
+
+@onready var phantom_sound: AudioStreamPlayer2D = $phantom_sound
+@onready var phantom_particles: GPUParticles2D = $phantom_particles
+@onready var gpu_particles_2d: GPUParticles2D = $GPUParticles2D
+@onready var music = get_tree().current_scene.get_node("AudioStreamPlayer2D")
+@onready var adrenaline: AnimationPlayer = $adrenaline
+@onready var adrenaline_timer: Timer = $AdrenalineTimer
 @onready var marker_2d: Marker2D = $Marker2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var invul_timer: Timer = $invul_timer
@@ -31,6 +42,10 @@ var base_damage := 1
 var damage_up_count := 0
 var piercing_chance := 0.0
 var radial_shot_chance := 0.0
+var adrenaline_active := false
+var adrenaline_upgrade_unlocked := false
+var adrenaline_duration := 15
+var phantom_dash_active := false
 
 func _ready() -> void:
 	current_health = max_health
@@ -157,6 +172,7 @@ func player_take_damage(amount: int = 1):
 	if is_invulnerable:
 		return
 	current_health -= amount
+	check_adrenaline()
 	get_tree().current_scene.get_node("GameUI").update_hearts(current_health, max_health)
 	is_invulnerable = true
 	animation_player.play("invuln_animation")
@@ -172,14 +188,17 @@ func die() -> void:
 
 func _on_hitbox_body_entered(body: Node2D) -> void:
 	if body.is_in_group("ENEMY"):
-		player_take_damage()
+		if phantom_dash_active and is_dashing:
+			body.take_damage(10)
+		else:
+			player_take_damage()
 
 
 func _on_invul_timer_timeout() -> void:
 	is_invulnerable = false
 
 func dash() -> void:
-	if Input.is_action_just_pressed("dash") and not is_dashing and not dash_cooldown.is_stopped():
+	if Input.is_action_just_pressed("dash") and not is_dashing and not dash_cooldown.is_stopped() and not is_invulnerable:
 		return
 	
 	
@@ -189,6 +208,13 @@ func dash() -> void:
 		dash_direction = get_dash_direction().normalized()
 		dash_duration_timer.start()
 		dash_cooldown.start()
+		
+		if phantom_dash_active:
+			gpu_particles_2d.hide()
+			phantom_particles.emitting = true
+			phantom_sound.play()
+			jet_sprite.texture = phantom_texture
+			jet_sprite.scale = Vector2.ONE * 0.07
 
 func get_dash_direction() -> Vector2:
 	var input_vector := Vector2.ZERO
@@ -214,6 +240,13 @@ func _on_dash_duration_timer_timeout() -> void:
 	is_dashing = false
 	is_invulnerable = false
 	
+	if phantom_dash_active:
+		is_dashing = false
+		is_invulnerable = false
+		jet_sprite.texture = normal_texture
+		gpu_particles_2d.show()
+		jet_sprite.scale = Vector2.ONE
+	
 
 
 func get_nearest_visible_enemy() -> Node2D:
@@ -236,12 +269,46 @@ func get_nearest_visible_enemy() -> Node2D:
 func heal_player() -> void:
 	if current_health == max_health:
 		return
-
+		
 	if current_health <= max_health:
 		current_health += 1
+		
 		game_ui.update_hearts(current_health, max_health)
+	check_adrenaline()
+	if adrenaline_active and current_health > 1:
+		disable_adrenaline()
 
 func upgrade_max_life() -> void:
 	max_health += 1
 	current_health = max_health
+	check_adrenaline()
 	get_tree().current_scene.get_node("GameUI").update_hearts(current_health, max_health)
+	
+func check_adrenaline() -> void:
+	if not adrenaline_upgrade_unlocked:
+		return
+	if adrenaline_active:
+		return
+		
+	if current_health == 1 and not adrenaline_active:
+		adrenaline_active = true
+		music.pitch_scale = 1.3
+		fire_rate *= 0.5
+		speed *= 1.5
+		adrenaline.play("adrenaline_blink")
+		adrenaline_timer.start(adrenaline_duration)
+	elif current_health > 1 and adrenaline_active:
+		disable_adrenaline()
+
+func disable_adrenaline() -> void:
+	if not adrenaline_active:
+		return
+	adrenaline_active = false
+	fire_rate /= 0.5
+	speed /= 1.5
+	music.pitch_scale = 1.0
+
+
+func _on_adrenaline_timer_timeout() -> void:
+	adrenaline.stop()
+	disable_adrenaline()

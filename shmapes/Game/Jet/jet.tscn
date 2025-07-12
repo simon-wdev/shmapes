@@ -1,9 +1,13 @@
-[gd_scene load_steps=14 format=3 uid="uid://nhyvn8fux2wd"]
+[gd_scene load_steps=21 format=3 uid="uid://nhyvn8fux2wd"]
 
 [ext_resource type="Script" uid="uid://dg85xs6idfyel" path="res://Game/Jet/jet.gd" id="1_qm20h"]
+[ext_resource type="Texture2D" uid="uid://7a0csxsbeh2b" path="res://Assets/Jet1.png" id="2_53sv0"]
 [ext_resource type="Texture2D" uid="uid://cx14tm63a5rue" path="res://Assets/Player-Re.png" id="2_dn2pr"]
 [ext_resource type="AudioStream" uid="uid://blbk88d3w143k" path="res://Assets/sounds/pop.ogg" id="3_3mo7r"]
+[ext_resource type="Texture2D" uid="uid://dpksp0y450xch" path="res://Assets/phantom_dash_circle.png" id="3_r52qx"]
 [ext_resource type="AudioStream" uid="uid://uqoqn6ydlp3i" path="res://Assets/sounds/turret.wav" id="4_fblxy"]
+[ext_resource type="PackedScene" uid="uid://dsw31050ufvro" path="res://PhantomDash/phantom_dash_particles.tscn" id="7_r52qx"]
+[ext_resource type="AudioStream" uid="uid://brgv8g4kvq0jx" path="res://Assets/sounds/laserSmall_001.ogg" id="8_f1d3x"]
 
 [sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_dn2pr"]
 points = PackedVector2Array(16.33, -19.272, 14.8673, 11.1033, -8.84787, -2.217)
@@ -69,10 +73,51 @@ scale_max = 4.0
 scale_curve = SubResource("CurveTexture_pu04x")
 color_ramp = SubResource("GradientTexture1D_3mo7r")
 
+[sub_resource type="Animation" id="Animation_fblxy"]
+resource_name = "adrenaline_blink"
+length = 0.6
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Jet1:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(0.732829, 0, 0.101341, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_pu04x"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Jet1:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_53sv0"]
+_data = {
+&"RESET": SubResource("Animation_pu04x"),
+&"adrenaline_blink": SubResource("Animation_fblxy")
+}
+
 [node name="Jet" type="CharacterBody2D" groups=["PLAYER"]]
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("1_qm20h")
+normal_texture = ExtResource("2_53sv0")
+phantom_texture = ExtResource("3_r52qx")
 
 [node name="Jet1" type="Sprite2D" parent="."]
 position = Vector2(7.84269, 0.894387)
@@ -136,7 +181,21 @@ volume_db = 3.0
 stream = ExtResource("4_fblxy")
 volume_db = 10.0
 
+[node name="AdrenalineTimer" type="Timer" parent="."]
+wait_time = 15.0
+
+[node name="adrenaline" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_53sv0")
+}
+
+[node name="phantom_particles" parent="." instance=ExtResource("7_r52qx")]
+
+[node name="phantom_sound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_f1d3x")
+
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
 [connection signal="timeout" from="invul_timer" to="." method="_on_invul_timer_timeout"]
 [connection signal="timeout" from="dash_cooldown" to="." method="_on_dash_cooldown_timeout"]
 [connection signal="timeout" from="dash_duration_timer" to="." method="_on_dash_duration_timer_timeout"]
+[connection signal="timeout" from="AdrenalineTimer" to="." method="_on_adrenaline_timer_timeout"]

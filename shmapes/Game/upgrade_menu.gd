@@ -10,17 +10,20 @@ var used_upgrades = []
 var current_choices = []
 
 var upgrades = [
-	{"name": "Fire Rate Up", "func": Callable(self, "_upgrade_fire_rate"), "weight": 25},
-	{"name": "Speed Up", "func": Callable(self, "_upgrade_speed"), "weight": 25},
+	{"name": "Fire Rate Up", "func": Callable(self, "_upgrade_fire_rate"), "weight": 22},
+	{"name": "Speed Up", "func": Callable(self, "_upgrade_speed"), "weight": 20},
 	{"name": "Dash Cooldown Down", "func": Callable(self, "_upgrade_dash"), "weight": 15},
-	{"name": "Spreadshot", "func": Callable(self, "_upgrade_spreadshot"), "weight": 10},
-	{"name": "Big Bullets", "func": Callable(self, "_upgrade_big_bullets"), "weight": 20},
-	{"name": "Crit Chance Up", "func": Callable(self, "_upgrade_crit"), "weight": 15},
-	{"name": "Damage Up",  "func": Callable(self, "_upgrade_damage"), "weight": 20},
-	{"name": "Piercing Bullets Chance +", "func": Callable(self, "_upgrade_piercing"), "weight": 15},
+	{"name": "Spreadshot", "func": Callable(self, "_upgrade_spreadshot"), "weight": 6},
+	{"name": "Big Bullets", "func": Callable(self, "_upgrade_big_bullets"), "weight": 15},
+	{"name": "Crit Chance Up", "func": Callable(self, "_upgrade_crit"), "weight": 12},
+	{"name": "Damage Up",  "func": Callable(self, "_upgrade_damage"), "weight": 10},
+	{"name": "Piercing Bullets Chance +", "func": Callable(self, "_upgrade_piercing"), "weight": 12},
 	{"name": "Target Range Up", "func": Callable(self, "_upgrade_target_range"), "weight": 10},
-	{"name": "Radial Multishot Chance+", "func": Callable(self, "_upgrade_radial_shot"), "weight": 10},
-	{"name": "Max Life +", "func": Callable(self, "_upgrade_max_life"), "weight": 5}
+	{"name": "Radial Multishot Chance+", "func": Callable(self, "_upgrade_radial_shot"), "weight": 8},
+	{"name": "Max Life +", "func": Callable(self, "_upgrade_max_life"), "weight": 5},
+	{"name": "Adrenaline Rush at 1HP", "func": Callable(self, "_upgrade_adrenaline"), "weight": 10},
+	{"name": "Adrenaline Duration +10s", "func": Callable(self, "_upgrade_adrenaline_duration"), "weight": 4},
+	{"name": "Phantom Dash", "func": Callable(self, "_upgrade_phantom_dash"), "weight": 4},
 ]
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -47,7 +50,13 @@ func show_menu() -> void:
 	
 	current_choices.clear()
 	
-	var available = upgrades.filter(func(u): return not used_upgrades.has(u.name))
+	var player = get_tree().current_scene.get_node("Jet")
+	var available = upgrades.filter(func(u):
+		return(
+			not used_upgrades.has(u.name)
+			and (u.name != "Adrenaline Duration +10s" or player.adrenaline_upgrade_unlocked)
+		)
+	)
 	var weighted_pool = []
 	
 	for upgrades in available:
@@ -121,3 +130,15 @@ func _upgrade_radial_shot(player):
 	
 func _upgrade_max_life(player):
 	player.upgrade_max_life()
+	
+func _upgrade_adrenaline(player):
+	player.adrenaline_upgrade_unlocked = true
+	player.check_adrenaline()
+	used_upgrades.append("Adrenaline Rush at 1HP")
+	
+func _upgrade_adrenaline_duration(player):
+	player.adrenaline_duration += 10
+	
+func _upgrade_phantom_dash(player):
+	player.phantom_dash_active = true
+	used_upgrades.append("Phantom Dash")
