@@ -17,22 +17,22 @@ var current_level = 0
 var growth = 1.25
 
 func generate_level_table():
-	var level_score = 100
+	var level_score = 70
 	var increment = 120
 	for i in range(25):
 		level_table.append(level_score)
 		level_score += increment
-		increment += 80
+		increment += 70
 		
 	for i in range(25, 50):
 		level_score += int(increment * 1.5)
 		level_table.append(level_score)
-		increment += 120
+		increment += 100
 		
 	for i in range(50, 100):
 		level_score += int(increment * 1.5)
 		level_table.append(level_score)
-		increment += 150
+		increment += 120
 
 func _ready() -> void:
 	score_label = get_node("ScoreLabel")

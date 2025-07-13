@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ckkurnu2jyo2o" path="res://NukePickup/nuke_pickup.gd" id="1_okdra"]
 [ext_resource type="Texture2D" uid="uid://dk0ibdyyh7uwq" path="res://Assets/nuke.png" id="2_qsdhb"]
-[ext_resource type="AudioStream" uid="uid://bwd25yl2i6phj" path="res://Assets/sounds/Dynamite with sensor.wav" id="3_eub8k"]
+[ext_resource type="AudioStream" uid="uid://c0i80bw2gyvtd" path="res://Assets/sounds/explosionCrunch_004.ogg" id="3_eub8k"]
 
 [sub_resource type="Animation" id="Animation_bfsou"]
 length = 0.001
@@ -112,6 +112,6 @@ autoplay = "heart_blink"
 
 [node name="nuke_sound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_eub8k")
-volume_db = 10.0
+volume_db = 5.0
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

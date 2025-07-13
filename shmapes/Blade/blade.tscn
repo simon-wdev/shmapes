@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2sfco4235erg"]
+
+[ext_resource type="Script" uid="uid://bmpm7uw8h4e74" path="res://Blade/blade.gd" id="1_d4yfm"]
+[ext_resource type="Texture2D" uid="uid://cxaft6egcmtr1" path="res://Assets/spinning_blade.png" id="1_o6niy"]
+
+[node name="Blade" type="Area2D"]
+scale = Vector2(0.13, 0.13)
+collision_layer = 4
+collision_mask = 10
+script = ExtResource("1_d4yfm")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1, -38)
+texture = ExtResource("1_o6niy")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(0, -160, -147, 89, 150, 90)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -16,6 +16,7 @@ var max_speed = 150.0
 
 var player: Node2D
 var health := max_health
+var knockback_timer: float = 0.0
 
 func take_damage(amount: int) -> void:
 	health -= amount
@@ -60,6 +61,12 @@ func _process(delta: float) -> void:
 	speed = base_speed + (current_score * 0.1)
 	speed = min(speed, max_speed)
 	
+	if knockback_timer > 0.0:
+		move_and_slide()
+		knockback_timer -= delta
+	else:
+		velocity = Vector2.ZERO
+	
 	
 
 func flash_on_hit():
@@ -78,6 +85,11 @@ func drop_nuke_pickup():
 		var nuke = NUKE_PICKUP.instantiate()
 		nuke.global_position = global_position
 		get_tree().current_scene.add_child(nuke)
+		
+		
+func apply_knockback(force: Vector2) -> void:
+	velocity += force
+	knockback_timer = 0.2
 	
 	
 	

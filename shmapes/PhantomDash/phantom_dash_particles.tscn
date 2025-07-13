@@ -29,7 +29,6 @@ color_ramp = SubResource("GradientTexture1D_q3a82")
 
 [node name="phantom_particles" type="GPUParticles2D"]
 z_index = 1
-position = Vector2(-7, 0)
 emitting = false
 amount = 200
 lifetime = 0.7

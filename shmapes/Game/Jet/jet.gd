@@ -1,11 +1,13 @@
 extends CharacterBody2D
 
 @export var speed := 350.0
-@export var fire_rate := 0.3
+@export var fire_rate := 0.4
 @export var dash_speed := 1500
 @export var target_range := 500.0
 
 const BULLET = preload("res://Bullet/bullet.tscn")
+const BLADE = preload("res://Blade/blade.tscn")
+const MAX_BLADES := 6
 
 @onready var jet_sprite: Sprite2D = $Jet1
 
@@ -27,6 +29,8 @@ const BULLET = preload("res://Bullet/bullet.tscn")
 @onready var game_ui: CanvasLayer = $"../GameUI"
 @onready var radial_sfx: AudioStreamPlayer2D = $radial_sfx
 @onready var take_damage_sfx: AudioStreamPlayer2D = $take_damage_sfx
+@onready var hitbox: Area2D = $Hitbox
+
 
 var current_target: Node2D = null
 var max_health = 3
@@ -46,6 +50,12 @@ var adrenaline_active := false
 var adrenaline_upgrade_unlocked := false
 var adrenaline_duration := 15
 var phantom_dash_active := false
+var orbiting_blades = []
+var blade_damage := 5
+var blade_count := 1
+var orbiting_blades_active = false
+var normal_hitbox_scale := Vector2.ONE
+var dash_hitbox_scale := Vector2(2.5, 2.5)
 
 func _ready() -> void:
 	current_health = max_health
@@ -211,6 +221,7 @@ func dash() -> void:
 		
 		if phantom_dash_active:
 			gpu_particles_2d.hide()
+			hitbox.scale = dash_hitbox_scale
 			phantom_particles.emitting = true
 			phantom_sound.play()
 			jet_sprite.texture = phantom_texture
@@ -241,6 +252,7 @@ func _on_dash_duration_timer_timeout() -> void:
 	is_invulnerable = false
 	
 	if phantom_dash_active:
+		hitbox.scale = normal_hitbox_scale
 		is_dashing = false
 		is_invulnerable = false
 		jet_sprite.texture = normal_texture
@@ -312,3 +324,16 @@ func disable_adrenaline() -> void:
 func _on_adrenaline_timer_timeout() -> void:
 	adrenaline.stop()
 	disable_adrenaline()
+	
+func enable_orbiting_blades(count := 1) -> void:
+	for blade in orbiting_blades:
+		blade.queue_free()
+	orbiting_blades.clear()
+	
+	for i in range(count):
+		var blade = BLADE.instantiate()
+		get_tree().current_scene.add_child(blade)
+		blade.center_node = self
+		blade.angle_offset = TAU * i / count
+		blade.damage = blade_damage
+		orbiting_blades.append(blade)

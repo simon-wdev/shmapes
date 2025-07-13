@@ -18,6 +18,7 @@ func _ready() -> void:
 	
 func _on_body_entered(body: Node2D) -> void:
 	if body.name == "Jet":
+		$CollisionPolygon2D.set_deferred("disabled", true)
 		sprite_2d.hide()
 		await nuke_effect()
 		queue_free()

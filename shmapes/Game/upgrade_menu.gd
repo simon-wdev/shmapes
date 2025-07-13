@@ -10,20 +10,23 @@ var used_upgrades = []
 var current_choices = []
 
 var upgrades = [
-	{"name": "Fire Rate Up", "func": Callable(self, "_upgrade_fire_rate"), "weight": 22},
-	{"name": "Speed Up", "func": Callable(self, "_upgrade_speed"), "weight": 20},
-	{"name": "Dash Cooldown Down", "func": Callable(self, "_upgrade_dash"), "weight": 15},
-	{"name": "Spreadshot", "func": Callable(self, "_upgrade_spreadshot"), "weight": 6},
-	{"name": "Big Bullets", "func": Callable(self, "_upgrade_big_bullets"), "weight": 15},
-	{"name": "Crit Chance Up", "func": Callable(self, "_upgrade_crit"), "weight": 12},
-	{"name": "Damage Up",  "func": Callable(self, "_upgrade_damage"), "weight": 10},
-	{"name": "Piercing Bullets Chance +", "func": Callable(self, "_upgrade_piercing"), "weight": 12},
-	{"name": "Target Range Up", "func": Callable(self, "_upgrade_target_range"), "weight": 10},
-	{"name": "Radial Multishot Chance+", "func": Callable(self, "_upgrade_radial_shot"), "weight": 8},
-	{"name": "Max Life +", "func": Callable(self, "_upgrade_max_life"), "weight": 5},
-	{"name": "Adrenaline Rush at 1HP", "func": Callable(self, "_upgrade_adrenaline"), "weight": 10},
-	{"name": "Adrenaline Duration +10s", "func": Callable(self, "_upgrade_adrenaline_duration"), "weight": 4},
+	{"name": "Fire Rate Up", "func": Callable(self, "_upgrade_fire_rate"), "weight": 18},
+	{"name": "Speed Up", "func": Callable(self, "_upgrade_speed"), "weight": 16},
+	{"name": "Dash Cooldown Down", "func": Callable(self, "_upgrade_dash"), "weight": 10},
+	{"name": "Spreadshot", "func": Callable(self, "_upgrade_spreadshot"), "weight": 4},
+	{"name": "Big Bullets", "func": Callable(self, "_upgrade_big_bullets"), "weight": 12},
+	{"name": "Crit Chance Up", "func": Callable(self, "_upgrade_crit"), "weight": 10},
+	{"name": "Damage Up",  "func": Callable(self, "_upgrade_damage"), "weight": 15},
+	{"name": "Piercing Bullets Chance +", "func": Callable(self, "_upgrade_piercing"), "weight": 10},
+	{"name": "Target Range Up", "func": Callable(self, "_upgrade_target_range"), "weight": 7},
+	{"name": "Radial Multishot Chance+", "func": Callable(self, "_upgrade_radial_shot"), "weight": 4},
+	{"name": "Max Life +", "func": Callable(self, "_upgrade_max_life"), "weight": 4},
+	{"name": "Adrenaline Rush at 1HP", "func": Callable(self, "_upgrade_adrenaline"), "weight": 8},
+	{"name": "Adrenaline Duration +10s", "func": Callable(self, "_upgrade_adrenaline_duration"), "weight": 3},
 	{"name": "Phantom Dash", "func": Callable(self, "_upgrade_phantom_dash"), "weight": 4},
+	{"name": "Orbiting Blades", "func": Callable(self, "_upgrade_orbiting_blades"), "weight": 8},
+	{"name": "Orbiting Blade DMG +5", "func": Callable(self, "_upgrade_blade_damage"), "weight": 15},
+	{"name": "Blade Count +1", "func": Callable(self, "_upgrade_blade_count"), "weight": 15},
 ]
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -55,6 +58,8 @@ func show_menu() -> void:
 		return(
 			not used_upgrades.has(u.name)
 			and (u.name != "Adrenaline Duration +10s" or player.adrenaline_upgrade_unlocked)
+			and (u.name != "Orbiting Blade DMG +5" or player.orbiting_blades_active)
+			and (u.name != "Blade Count +1" or player.orbiting_blades_active)
 		)
 	)
 	var weighted_pool = []
@@ -126,7 +131,7 @@ func _upgrade_target_range(player):
 	player.target_range *= 1.1
 	
 func _upgrade_radial_shot(player):
-	player.radial_shot_chance = clamp(player.radial_shot_chance + 0.1, 0.0, 0.4)
+	player.radial_shot_chance = clamp(player.radial_shot_chance + 0.08, 0.0, 0.32)
 	
 func _upgrade_max_life(player):
 	player.upgrade_max_life()
@@ -142,3 +147,21 @@ func _upgrade_adrenaline_duration(player):
 func _upgrade_phantom_dash(player):
 	player.phantom_dash_active = true
 	used_upgrades.append("Phantom Dash")
+	
+func _upgrade_orbiting_blades(player):
+	player.orbiting_blades_active = true
+	player.enable_orbiting_blades()
+	used_upgrades.append("Orbiting Blades")
+	
+func _upgrade_blade_damage(player):
+	player.blade_damage += 5
+	
+func _upgrade_blade_count(player):
+	if player.blade_count >= player.MAX_BLADES:
+		used_upgrades.append("Blade Count +1")
+	
+	elif player.blade_count < player.MAX_BLADES:
+		player.blade_count += 1
+		player.enable_orbiting_blades(player.blade_count)
+		
+	

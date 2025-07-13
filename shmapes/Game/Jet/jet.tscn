@@ -73,6 +73,21 @@ scale_max = 4.0
 scale_curve = SubResource("CurveTexture_pu04x")
 color_ramp = SubResource("GradientTexture1D_3mo7r")
 
+[sub_resource type="Animation" id="Animation_pu04x"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Jet1:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
 [sub_resource type="Animation" id="Animation_fblxy"]
 resource_name = "adrenaline_blink"
 length = 0.6
@@ -89,21 +104,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [Color(1, 1, 1, 1), Color(0.732829, 0, 0.101341, 1), Color(1, 1, 1, 1)]
-}
-
-[sub_resource type="Animation" id="Animation_pu04x"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Jet1:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_53sv0"]
@@ -193,6 +193,7 @@ libraries = {
 
 [node name="phantom_sound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("8_f1d3x")
+volume_db = -5.0
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
 [connection signal="timeout" from="invul_timer" to="." method="_on_invul_timer_timeout"]

@@ -12,6 +12,7 @@ const HEART_PICKUP = preload("res://Pickable/heart_pickup.tscn")
 
 var player: Node2D
 var health := max_health
+var knockback_timer: float = 0.0
 
 func take_damage(amount: int) -> void:
 	health -= amount
@@ -54,6 +55,13 @@ func _process(delta: float) -> void:
 	var current_score = game_ui.score
 	
 	rotation += deg_to_rad(60) * delta
+	
+	
+	if knockback_timer > 0.0:
+		move_and_slide()
+		knockback_timer -= delta
+	else:
+		velocity = Vector2.ZERO
 
 func flash_on_hit():
 	modulate = Color(1, 0.4,0.4)
@@ -65,6 +73,9 @@ func spawn_heart() -> void:
 	var heal = HEART_PICKUP.instantiate()
 	heal.global_position = position
 	get_tree().current_scene.add_child(heal)
-	
+
+func apply_knockback(force: Vector2) -> void:
+	velocity += force
+	knockback_timer = 0.2
 	
 	

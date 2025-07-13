@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/Give_Back_My_Vibes.mp3-edd7624d4d4f2410b4db0a
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0
